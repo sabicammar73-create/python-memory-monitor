@@ -1,0 +1,191 @@
+"""Jednostavan CLI alat za prikaz RSS memorije Python procesa."""
+
+from __future__ import annotations
+
+import argparse
+import gc
+import os
+import time
+
+import psutil
+
+
+def memory_usage_mb(pid: int | None = None) -> float:
+    """Vrati RSS memoriju procesa u MiB (psutil vrijednost izražena u bajtovima)."""
+    process = psutil.Process(pid if pid is not None else os.getpid())
+    return round(process.memory_info().rss / (1024 * 1024), 2)
+
+
+def run_demo(number_count: int) -> None:
+    """Prikaži memoriju prije, tijekom i nakon probne alokacije cijelih brojeva."""
+    print(f"Početna potrošnja memorije: {memory_usage_mb()} MiB")
+
+    if number_count <= 0:
+        print("Probna alokacija nije pokrenuta. Za nju navedite --allocate BROJ.")
+        return
+
+    print(f"\n[Alociranje {number_count:,} cijelih brojeva...]")
+    started_at = time.perf_counter()
+    numbers = list(range(number_count))
+    print(f"Potrošnja nakon alokacije: {memory_usage_mb()} MiB")
+    print(f"Vrijeme alokacije: {time.perf_counter() - started_at:.2f} s")
+
+    print("\n[Uklanjanje podataka i pokretanje garbage collectora...]")
+    del numbers
+    gc.collect()
+    print(f"Potrošnja nakon čišćenja: {memory_usage_mb()} MiB")
+    print("Napomena: RSS se ne mora odmah smanjiti jer Pythonov alokator može zadržati memoriju.")
+
+
+def positive_or_zero(value: str) -> int:
+    """Parsira nenegativan cijeli broj za CLI argument."""
+    try:
+        parsed = int(value)
+    except ValueError as error:
+        raise argparse.ArgumentTypeError("vrijednost mora biti cijeli broj") from error
+    if parsed < 0:
+        raise argparse.ArgumentTypeError("vrijednost ne može biti negativna")
+    return parsed
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        description="Prati RSS potrošnju memorije Python procesa i po želji simulira alokaciju."
+    )
+    parser.add_argument(
+        "--allocate",
+        type=positive_or_zero,
+        default=0,
+        metavar="BROJ",
+        help="broj cijelih brojeva za probnu alokaciju (zadano: 0)",
+    )
+    args = parser.parse_args()
+    run_demo(args.allocate)
+
+
+if __name__ == "__main__":
+    main()
+# List local branches; * marks the current branch
+git branch
+
+# Create a branch without switching to it
+git branch feature/login
+
+# Delete a branch that has been merged
+git branch -d feature/login
+# Switch to an existing branch
+git checkout feature/login
+
+# Create a branch and switch to it
+git checkout -b feature/login
+git switch feature/login
+git switch -c feature/login  # create and switch
+
+"""Jednostavan CLI alat za prikaz RSS memorije Python procesa."""
+
+from __future__ import annotations
+
+import argparse
+import gc
+import os
+import time
+
+import psutil
+
+
+def memory_usage_mb(pid: int | None = None) -> float:
+    """Vrati RSS memoriju procesa u MiB (psutil vrijednost izražena u bajtovima)."""
+    process = psutil.Process(pid if pid is not None else os.getpid())
+    return round(process.memory_info().rss / (1024 * 1024), 2)
+
+
+def run_demo(number_count: int) -> None:
+    """Prikaži memoriju prije, tijekom i nakon probne alokacije cijelih brojeva."""
+    print(f"Početna potrošnja memorije: {memory_usage_mb()} MiB")
+
+    if number_count <= 0:
+        print("Probna alokacija nije pokrenuta. Za nju navedite --allocate BROJ.")
+        return
+
+    print(f"\n[Alociranje {number_count:,} cijelih brojeva...]")
+    started_at = time.perf_counter()
+    numbers = list(range(number_count))
+    print(f"Potrošnja nakon alokacije: {memory_usage_mb()} MiB")
+    print(f"Vrijeme alokacije: {time.perf_counter() - started_at:.2f} s")
+
+    print("\n[Uklanjanje podataka i pokretanje garbage collectora...]")
+    del numbers
+    gc.collect()
+    print(f"Potrošnja nakon čišćenja: {memory_usage_mb()} MiB")
+    print("Napomena: RSS se ne mora odmah smanjiti jer Pythonov alokator može zadržati memoriju.")
+
+
+def positive_or_zero(value: str) -> int:
+    """Parsira nenegativan cijeli broj za CLI argument."""
+    try:
+        parsed = int(value)
+    except ValueError as error:
+        raise argparse.ArgumentTypeError("vrijednost mora biti cijeli broj") from error
+    if parsed < 0:
+        raise argparse.ArgumentTypeError("vrijednost ne može biti negativna")
+    return parsed
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        description="Prati RSS potrošnju memorije Python procesa i po želji simulira alokaciju."
+    )
+    parser.add_argument(
+        "--allocate",
+        type=positive_or_zero,
+        default=0,
+        metavar="BROJ",
+        help="broj cijelih brojeva za probnu alokaciju (zadano: 0)",
+    )
+    args = parser.parse_args()
+    run_demo(args.allocate)
+
+
+if __name__ == "__main__":
+    main()
+psutil>=5.9,<8
+FROM python:3.12-slim
+
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY memory_monitor.py .
+
+ENTRYPOINT ["python", "memory_monitor.py"]
+CMD ["--help"]
+# GitMinnie Memory Monitor
+
+Mali Python CLI projekt koji prikazuje RSS potrošnju memorije procesa i omogućuje kontroliranu probnu alokaciju cijelih brojeva. Koristan je za demonstraciju osnovnog praćenja memorije; nije zamjena za profiler.
+
+## Zahtjevi
+
+- Python 3.10 ili noviji
+- pip
+
+## Pokretanje lokalno
+
+```bash
+cd memory-monitor
+python -m venv .venv
+# GitMinnie Memory Monitor
+
+Mali Python CLI projekt koji prikazuje RSS potrošnju memorije procesa i omogućuje kontroliranu probnu alokaciju cijelih brojeva. Koristan je za demonstraciju osnovnog praćenja memorije; nije zamjena za profiler.
+
+## Zahtjevi
+
+- Python 3.10 ili noviji
+- pip
+
+## Pokretanje lokalno
+
+```bash
+cd memory-monitor
+python -m venv .venv
+__pycache__/
+.venv/
+*.py[cod]
